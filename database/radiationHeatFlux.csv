@@ -1,0 +1,17 @@
+i,Body segments,Radiation heat flux values (W/m2)
+1,Head,80
+2,Chest,50
+3,Back,50
+4,Pelvis,18
+5,Left shoulder,40
+6,Right shoulder,40
+7,Left arm,14
+8,Right arm,14
+9,Left hand,12
+10,Right hand,12
+11,Left thigh,16
+12,Right thigh,16
+13,Left leg,16
+14,Right leg,16
+15,Left foot,25
+16,Right foot,25

@@ -1,0 +1,17 @@
+Heat Transfer coefficients from A Mathematical Model of Physiological Temperature Regulation in Man,	Segment,	HR,	HC
+1,Head,5.5,2.75
+2,Chest,4.5,2.15
+3,Back,4.5,2.15
+4,Pelvis,4.25,2.45
+5,L-shoulder,4.4,2.15
+6,R-shoulder,4.4,2.15
+7,L-arm,4.3,3
+8,R-arm,4.3,3
+9,L-hand,3,3.35
+10,R-hand,3,3.35
+11,L-thigh,4,2.75
+12,R-thigh,4,2.75
+13,L-leg,4,2.75
+14,R-leg,4,2.75
+15,L-foot,4,3
+16,R-foot,4,3

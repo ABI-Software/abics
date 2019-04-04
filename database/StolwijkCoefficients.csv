@@ -1,0 +1,17 @@
+Heat Production and Basal Evaporative loss coefficients from A Mathematical Model of Physiological Temperature Regulation in Man,"	Segment",QB-C,QB-M,QB-F,QB-S,EB
+1,Head,12.84,0.1,0.11,0.08,0.63
+2,Chest,45.38,5,2.13,0.4,3.25
+3,Back,45.38,5,2.13,0.4,3.25
+4,Pelvis,34.5925,4.465,1.705,0.38,3.15
+5,L-shoulder,23.04,2.975,1.15,0.265,2.225
+6,R-shoulder,23.04,2.975,1.15,0.265,2.225
+7,L-arm,0.7,0.95,0.17,0.13,1.2
+8,R-arm,0.7,0.95,0.17,0.13,1.2
+9,L-hand,0.08,0.2,0.03,0.05,0.45
+10,R-hand,0.08,0.2,0.03,0.05,0.45
+11,L-thigh,23.805,3.93,1.28,0.36,3.05
+12,R-thigh,23.805,3.93,1.28,0.36,3.05
+13,L-leg,2.23,2.86,0.43,0.32,2.85
+14,R-leg,2.23,2.86,0.43,0.32,2.85
+15,L-foot,0.13,0.02,0.04,0.07,0.62
+16,R-foot,0.13,0.02,0.04,0.07,0.62

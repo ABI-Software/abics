@@ -1,0 +1,5 @@
+Cond,Core (C),Skin (S),Core skin (P)
+Sweat ,Csw = 371.2,Ssw = 33.6,Psw = 0.0
+Shivering ,Cch = 0.0,Sch = 0.0,Pch = 24.4
+Vasodilation ,Cdl = 117.0,Sdl = 7.5,Pdl = 0.0
+Vasoconstriction ,Cst = 11.5,Sst = 11.5,Pst = 0.0
