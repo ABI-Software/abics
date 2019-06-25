@@ -37,7 +37,6 @@
 from __future__ import unicode_literals,print_function
 #from numba import jit
 import numpy as np
-from support.Interfaces import ClothingResistanceModel, RadiationModel
 from thermoregulation.PMVModels import ZhangModel
 from scipy.integrate._ode import ode
 canUsePersonalizedModel = True
@@ -57,10 +56,11 @@ class Tanabe65MNModel(object):
     alpha = 1.0
     rhoC  = 1.067
     nDofs = 0
-    #Qb = 0.778
     met = 0.8
     hr = 4.9 # W/m^2
     zhangComfortModel = ZhangModel()
+    eswScaleFactor = 1.04921477
+    emaxFactor = 19.7289316
     
     def __init__(self, humanModel):
         '''
@@ -254,13 +254,12 @@ class Tanabe65MNModel(object):
 
     
     #Following eq 21 of X. Wan, J. Fan, J. Therm Biol, 33, 2008, 87-97
-#    @jit
     def getEmax(self,temperature):
         #Using Tetens eq
         Psk = 0.61078*np.exp(17.625*temperature[:,3]/(temperature[:,3]+237.3)) #Units kpa 
         #Require vapour pressure so RH is involved
         Pa  = self.relativeHumdity*0.61078*np.exp(17.625*self.Ta/(self.Ta+237.3)) #Units kpa 
-        v = 1000*self.lhm*(Psk-Pa)*self.bodySurfaceArea #Formula in Pa, Note that the bodysurface area factor is applied to handle nonstandard body area, according to Eq 14 of Tanabe 2002
+        v = self.emaxFactor*(Psk-Pa)*self.bodySurfaceArea/self.lhm #Formula in Pa, Note that the bodysurface area factor is applied to handle nonstandard body area, according to Eq 14 of Tanabe 2002
         v[v<0] = 0.0
         return v
     
@@ -280,46 +279,7 @@ class Tanabe65MNModel(object):
         pa  = self.relativeHumdity*0.61078*np.exp(17.625*ta/(ta+237.3)) #Units kpa
         #return (0.0014*(34-ta)+0.017*(5.867-pa))*(np.sum(np.sum(self.Qij)))*self.chestSurfaceFactors
         return (0.0014*(34-ta)+0.017*(5.867-pa))*(np.sum(np.sum(self.Qij)))
-    
-    def dt2bydt2(self,temp):
-        '''
-        Compute the jacobian
-        '''
-        temperature = np.reshape(temp[0:-1], (-1,4))
-        
-        BFS = (self.basalBloodFlow +(self.W + self.Ch)/1.16)
-        #Compute BF For skin
-        BFS[:,3] = self.km*(self.basalBloodFlow[:,3] + self.SKINV*self.DL)/(1.0+self.SKINC*self.ST)
-        BF = self.alpha*self.rhoC*BFS
-        D  = self.thermalConductance
-        
-        A = 1000*self.lhm*0.61078
-        B = 17.625
-        C = 237.3
-        emaxdot = A*B*C*np.exp(B*temperature[:,3]/(temperature[:,3]+C))/((temperature[:,3]+C)*(temperature[:,3]+C))
-        
-        jac = np.zeros((self.nDofs*4+1,self.nDofs*4+1))
-        localMat = np.zeros((4,4))
-        localCBC = np.zeros(4)
-        for i in range(self.nDofs):
-            localMat.fill(0)
-            localMat[0,0] = (-BF[i,0]-D[i,0])/self.heatCapacity[i,0]
-            localMat[0,1] = D[i,0]/self.heatCapacity[i,0]
-            localMat[1,0] = D[i,0]/self.heatCapacity[i,1]
-            localMat[1,1] = -BF[i,1]/self.heatCapacity[i,1]
-            localMat[1,2] = D[i,1]/self.heatCapacity[i,1]
-            localMat[2,1] = D[i,1]/self.heatCapacity[i,2]
-            localMat[2,2] = -BF[i,2]/self.heatCapacity[i,2]
-            localMat[2,3] = D[i,2]/self.heatCapacity[i,2]
-            localMat[3,2] = D[i,2]/self.heatCapacity[i,3]
-            localMat[3,3] = (-BF[i,3] -D[i,2] - (self.hc[i] + 0.06*emaxdot[i])*self.bodySurfaceArea[i])//self.heatCapacity[i,3]
-            localCBC= -BF[i,:]/self.heatCapacity[i,:]
-            jac[i*4:(i+1)*4,i*4:(i+1)*4]=localMat
-            jac[i*4:(i+1)*4,-1] = localCBC
-            jac[-1,i*4:(i+1)*4] = BF[i,:]/self.heatCapacity[i,:]
-        jac[-1,-1] = np.sum(jac[:,-1]) #Currently last element is zero so sum should not affect
-        return jac
-            
+                
     def dTbydt(self,temp):
         temperature = np.reshape(temp[0:-1], (-1,4))
         cbcTemp = temp[-1]
@@ -336,9 +296,11 @@ class Tanabe65MNModel(object):
         Qt = self.getQti(temperature)
         Emax  = self.getEmax(temperature)
         Esw = self.Esw
-        #Esw[Esw<0] = 0.0
-        Eb = 0.06*(Emax-Esw)
+        Esw[Esw<0] = 0.0
+        Eb = self.eswScaleFactor*(Emax-Esw)
         E =  Eb + Esw
+        ix = E>Esw
+        E[ix] = Esw[ix]
         self.dT[:,0] = self.Qij[:,0] - BF[:,0] - D[:,0]
         self.dT[:,1] = self.Qij[:,1] - BF[:,1] + D[:,0] - D[:,1]
         self.dT[:,2] = self.Qij[:,2] - BF[:,2] + D[:,1] - D[:,2]
@@ -390,11 +352,7 @@ class Tanabe65MNModel(object):
             temperature = r.integrate(tl[-1])                
             self.temperature = np.reshape(temperature[:-1], (-1,4))
             self.cbcTemp = temperature[-1]
-            
-
-        #jac = self.dt2bydt2(temperature)
-        #np.savetxt('jtest.csv', jac, delimiter=',')
-        
+                    
         #Compute the wettedness based on the final value
         Emax = self.getEmax(self.temperature)
         Emax[Emax==0] = 1.0 #Avoid divide by zero
@@ -601,6 +559,8 @@ class Tanabe65MNProjectedToStandard16(Tanabe65MNModel):
                                                       CardiacIndex=bm.CI,\
                                                       AgingCoeffientForBlood=bm.Rage,\
                                                       SexBasedMetabolicRatio=bm.Metb_sexratio)
+        parameters = humanParam.getPersonalizedParameters()
+        parameters['controlCoefficients'] = humanModel.getPersonalizedParameters()['controlCoefficients']
         #The following will use the mesh surface areas instead of standard surface areas
         #humanParam.updateToParameterModel(humanModel.bodyDataModel)
         super(Tanabe65MNProjectedToStandard16, self).__init__(humanParam)

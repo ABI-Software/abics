@@ -122,13 +122,16 @@ class ActivityDefinitionWidget(base, form):
         self.moveUpButton.setIcon(self.style().standardIcon(QtWidgets.QStyle.SP_ArrowUp))
         self.moveDownButton.setIcon(self.style().standardIcon(QtWidgets.QStyle.SP_ArrowDown))
         
-        headers = list(map(tr,['Description','Duration','RH %','Temp','Met','Vel. of Air','Clothing File','Radiation File']))
+        headers = list(map(tr,['Description','Duration (min)','RH %','Temp','Vel. of Air (m/s)','Met','Clothing File','Radiation File']))
         self.activityTable.setColumnCount(len(headers))
         self.activityTable.setHorizontalHeaderLabels(headers)
         self.activityTable.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
-        for i in range(1,6):
+        self.activityTable.horizontalHeader().resizeSection(0,65)
+        self.activityTable.horizontalHeader().resizeSection(1,95)
+        for i in range(2,6):
             self.activityTable.horizontalHeader().resizeSection(i,65)
             self.activityTable.setItemDelegateForColumn(i,FloatDelegate(self))
+        self.activityTable.horizontalHeader().resizeSection(4,95)
         self.setObjectName('ActivityWizard')
         #Create the plots for individual electrode selection
         self.createSignalPlots()

@@ -651,18 +651,3 @@ class HumanModel(AbstractHumanModel):
                     print(logger.getMessageTypeAtIndex(i), logger.getMessageTextAtIndex(i))
                 logger.removeAllMessages()
                 
-        region.writeFile('test.ex2')            
-
-from thermoregulation.Tanabe65MN import Tanabe65MNModel
-if __name__ == '__main__':
-    #obj = HumanModel(r'../database/male.obj',filterFaces=True)
-    obj = HumanModel(r'D:\Temp\Human\infant.obj',filterFaces=True)
-    obj.personalizeParameters()
-    trModel = Tanabe65MNModel(obj)
-    #flux = obj.computeIncidantFlux(10.0, [-5.57895028e-04, 1.19548007e+00,  100.0])
-    #np.savetxt('flux.csv', flux,delimiter=',')
-    flux = obj.getFaceIndexes()
-    #print(obj.numberOfFaces)
-    obj.generateMesh()
-    
-    #obj.getPersonalizedParameters()

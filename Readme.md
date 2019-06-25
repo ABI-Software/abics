@@ -25,7 +25,7 @@ Install dependencies
 conda install pyqt=5
 conda install scipy json 
 conda install -c conda-forge diskcache pyqtgraph
-pip install sqllitedict 
+pip install sqlitedict 
 
 Install/Link with opencmiss-zinc
 Zinc can be installed by executing

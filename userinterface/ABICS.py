@@ -95,7 +95,7 @@ if __name__ == '__main__':
         from diskcache.fanout import FanoutCache        
         from userinterface.Simulator import WorkspaceWidget, SimulationMainWindow
     except ImportError as e:
-        QtWidgets.QMessageBox.critical(app, "Required module missing", "%s\n Install or contact your administrator"%e.message)
+        QtWidgets.QMessageBox.critical(None, "Required module missing", "%s\n Install or contact your administrator"%e)
         sys.exit(0)
     
     workspaceWidget = WorkspaceWidget()

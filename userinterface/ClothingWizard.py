@@ -109,7 +109,7 @@ class FabricList(QtWidgets.QWidget):
         model.setHorizontalHeaderLabels([tr('Name'), tr('Thickness'), tr('Thermal Resistance'),tr('Evaporative Resistance')])
         for row, arr in enumerate(fabrics):
             for col , text in enumerate(arr):
-                item = QtGui.QStandardItem(text)
+                item = QStandardItemWithHash(text)
                 model.setItem(row, col, item)
         
         # filter proxy model
@@ -157,14 +157,14 @@ class FabricList(QtWidgets.QWidget):
             logging.error(tr("Failed to load fabrics"))
         for row, arr in enumerate(fabrics):
             for col , text in enumerate(arr):
-                item = QtGui.QStandardItem(text)
+                item = QStandardItemWithHash(text)
                 self.dataModel.setItem(row, col, item)
         self.numFabrics = len(fabrics)
 
     def addItem(self,arr):
         rItems = []
         for text in arr:
-            item = QtGui.QStandardItem(text)
+            item = QStandardItemWithHash(text)
             rItems.append(item)
             
         self.dataModel.appendRow(rItems)
@@ -193,6 +193,12 @@ class FabricList(QtWidgets.QWidget):
             QtWidgets.QMessageBox.critical(self, tr("Failed"), tr("Unable to update permanent store!"))
             logging.error(tr("Failed to update permanent store"))
         self.reload()
+
+
+class QStandardItemWithHash(QtGui.QStandardItem):
+    
+    def __hash__(self, *args, **kwargs):
+        return id(self)
 
 class ClothingDefinitionWidget(base, form):
     '''
@@ -223,11 +229,11 @@ class ClothingDefinitionWidget(base, form):
         skinparam = {'TYPE':'LAYER','INDEX':'0','NAME':'SKIN','THICKNESS':'0.0','Rea':Rea,'Ret':Rt,'Vel':0.0}
         self.settingdata = False
         for ix,itm in enumerate(items):
-            nodeItem = QtGui.QStandardItem(tr(itm))
+            nodeItem = QStandardItemWithHash(tr(itm))
             self.rootItems[itm] = nodeItem
             nodeItem.setEditable(False)
             self.itemMetaData[nodeItem] = {'TYPE':'ANATOMY','ITEM':itm,'INDEX':ix}
-            nudeItem = QtGui.QStandardItem('SKIN')
+            nudeItem = QStandardItemWithHash('SKIN')
             nudeItem.setEditable(False)
             sm = deepcopy(skinparam)
             sm['ITEM'] = itm
@@ -384,7 +390,7 @@ class ClothingDefinitionWidget(base, form):
         skeys = sorted(indexes.keys())
         for ix in skeys:
             itm = indexes[ix]
-            nodeItem = QtGui.QStandardItem(itm)
+            nodeItem = QStandardItemWithHash(itm)
             self.rootItems[itm] = nodeItem
             nodeItem.setEditable(False)
             self.itemMetaData[nodeItem] = {'TYPE':'ANATOMY','ITEM':itm,'INDEX':ix}
@@ -394,7 +400,9 @@ class ClothingDefinitionWidget(base, form):
                 sortedValues[int(v['INDEX'])] = v
             ic = OrderedDict()
             for i,v in enumerate(sortedValues):
-                nudeItem = QtGui.QStandardItem(v['NAME'])
+                if v is None:
+                    continue
+                nudeItem = QStandardItemWithHash(v['NAME'])
                 nudeItem.setEditable(False)
                 self.itemMetaData[nudeItem] = v
                 nodeItem.insertRow(i, [nudeItem])
@@ -419,20 +427,21 @@ class ClothingDefinitionWidget(base, form):
                 if 'CLOTHINGMESHDATA' in model and model['CLOTHINGMESHDATA'] is not None:
                     self.clothingMeshData = model['CLOTHINGMESHDATA']
                     namedFile = tempfile.NamedTemporaryFile(mode='wb',suffix='.obj', delete=False)
-                    namedFile.write(model['CLOTHINGMESHDATA'])
+                    namedFile.write(model['CLOTHINGMESHDATA'].encode('utf-8'))
                     namedFile.close()
                     self._loadZincMeshFromFile(namedFile.name)
+                    os.remove(namedFile.name)
                 self.loadClothingValues(model['LAYERS'])
                 self.cache.set('LASTSUCCESSFULWORKSPACE',os.path.dirname(filename[0]))
-                if not model['CLOTHINGMESHDATA'] is None:
-                    os.remove(namedFile.name)
+
+                    
 
     def _saveClothingModel(self):
         direc = self.cache.get('LASTSUCCESSFULWORKSPACE',default='.')
         filename = QtWidgets.QFileDialog.getSaveFileName(None, tr('Clothing filename'),direc,"JSON (*.json)")
         if not filename is None and len(filename[0].strip()) > 0:
             with open(filename[0],'w') as ser:
-                json.dump({'CLOTHINGMESHDATA':self.clothingMeshData,'LAYERS':list(self.itemMetaData.values())}, ser)
+                json.dump({'CLOTHINGMESHDATA':self.clothingMeshData.decode('utf-8'),'LAYERS':list(self.itemMetaData.values())}, ser)
                 self.cache.set('LASTSUCCESSFULWORKSPACE',os.path.dirname(filename[0]))
 
     def _setLayerModel(self):
@@ -484,10 +493,11 @@ class ClothingDefinitionWidget(base, form):
             return
         
         if layer not in children:
-            newItem = QtGui.QStandardItem(mdata['NAME'])
+            newItem = QStandardItemWithHash(mdata['NAME'])
             newItem.setEditable(False)
             self.itemMetaData[newItem] = mdata
             self.rootItems[bpart].insertRow(layer, [newItem])
+            self.itemChildren[bpart][layer] = layer
         self.itemMetaData[children[layer]] = mdata
                 
 

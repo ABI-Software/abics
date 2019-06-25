@@ -89,7 +89,7 @@ class ZhangModel(object):
         if not dt is None:
             dtd = dt
         for k,v in self.calcKeys.items():
-            tsum = np.array([0,0,0,0,0])
+            tsum = np.array([0.0,0.0,0.0,0.0,0.0])
             for ky in v:
                 ast = sixteenSegmentSkinTempAndDt[ky]
                 act = sixteenSegmentCoreTempAndDt[ky]
