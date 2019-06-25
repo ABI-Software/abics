@@ -6,7 +6,6 @@ A user manual describing the features of the tool, outlining the steps to setup 
 
 Installation Instructions
 -------------------------
-::
 Download opencmiss zinc library from the development releases for the target operating system
 The binaries can be found at
 http://opencmiss.org/downloads.html#/package/opencmisslibs/devreleases
@@ -23,10 +22,12 @@ miniconda 2.7 or 3.6 (Based on the opencmiss-zinc library)
 
 Install dependencies
 --------------------
-::
 conda install pyqt=5
+
 conda install scipy json 
+
 conda install -c conda-forge diskcache pyqtgraph
+
 pip install sqlitedict 
 
 Install/Link with opencmiss-zinc
