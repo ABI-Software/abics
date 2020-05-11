@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>ICMA Launcher</string>
+   <string>ABICS Launcher</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -53,7 +53,7 @@
    <item>
     <widget class="QLabel" name="label_2">
      <property name="text">
-      <string>      BondGraph Editor uses the workspace directory for caching , storing preferences and workflow artifacts.</string>
+      <string>      ABICS Editor uses the workspace directory for caching , storing preferences and workflow artifacts.</string>
      </property>
     </widget>
    </item>
