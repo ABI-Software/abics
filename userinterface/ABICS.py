@@ -72,15 +72,16 @@ if __name__ == '__main__':
     splash.raise_()
     splash.show()
     splash.activateWindow()
-    splash.showMessage("", QtCore.Qt.AlignTop | QtCore.Qt.AlignCenter, QtCore.Qt.black)
+    splash.showMessage("", int(QtCore.Qt.AlignTop | QtCore.Qt.AlignCenter), QtCore.Qt.black)
 #Check if imports are available and packages are available
     try:
         import opencmiss.zinc
         #Check version
-        version = list(map(int,opencmiss.zinc.__version__.split('.')))
-        logging.info("Opencmiss zinc version %s. Tested against (3.1.2)"%opencmiss.zinc.__version__)
-        if version[0] < 3 and version[1] < 1 and version[2] < 2:
-            QtWidgets.QMessageBox.critical(app, "Required module missing", "Python Package OpenCMISS Zinc release 3.1.2 or higher is required!! Install or contact your administrator")
+        version = opencmiss.zinc.__version__.split('.')
+        #version = list(map(int,opencmiss.zinc.__version__.split('.')))
+        logging.info("Opencmiss zinc version %s. Tested against (3.3.0)"%opencmiss.zinc.__version__)
+        if int(version[0]) < 3 and int(version[1]) < 1 and int(version[2]) < 2:
+            QtWidgets.QMessageBox.critical(app, "Required module missing", "Python Package OpenCMISS Zinc release #3.3.0 or higher is required!! Install or contact your administrator")
             sys.exit(0)
         progressBar.setValue(1)
         app.processEvents()                    
