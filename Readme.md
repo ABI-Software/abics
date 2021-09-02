@@ -3,44 +3,26 @@ Auckland Bioengineering Institute Comfort Simulator (ABICS)
 
 The Auckland Bioengineering Institute (ABI) Comfort Simulator (CS) is a user friendly, free, open-source, python based tool that enables the simulation of thermoregulation on realistic human geometries for various environmental, body constitution and metabolic activity levels.
 A user manual describing the features of the tool, outlining the steps to setup an experiment, simulate, and visualize it is available in the docs folder.
-
-Installation Instructions
--------------------------
-Download opencmiss zinc library from the development releases for the target operating system
-The binaries can be found at
-http://opencmiss.org/downloads.html#/package/opencmisslibs/devreleases
-
-Install/Extract the archive and determine the python binding version that has been provided.
-Look into the OpenCMISS-Libraries<VERSION>/lib directory
-If the directory python2.7 exists then zinc bindings for python 2.7 exists
-If the directory python3.6 exists then zinc bindings for python 3.6 exists
-If both exist, choose one that you like (note that python 3.6 bindings will not work in python 3.7)
-Install Python 
-(you can use an existing python distribution, ensure the packages are installed through appropriate installers)
-
-miniconda 2.7 or 3.6 (Based on the opencmiss-zinc library) 
-
+#Installation 
+The code is compatible with python 3.6 or higher. The tool relies on dependencies which are expected to be available in the host python environment (both the client and the server). 
+Current opencmisszinc release requires python 3.9, so a python 3.9 or higher environment is required. 
+Install Python v 3.9 or higher.
+-------------
+You may use an existing python distribution, ensure the packages are installed through appropriate installers.
 Install dependencies
---------------------
-conda install pyqt=5
-
-conda install scipy json 
-
-conda install -c conda-forge diskcache pyqtgraph
-
-pip install sqlitedict 
-
+-------------
+  Below are the commands for installing dependencies in an anaconda based environment. 
+```
+conda install pyqt=5 
+conda install scipy json
+conda install -c conda-forge diskcache pyqtgraph sqlitedict pyzmq
+```
 Install/Link with opencmiss-zinc
-Zinc can be installed by executing
-python setup.py install 
-from the OpenCMISS-Libraries<VERSION>/lib/python<2,3>/Release/opencmiss.zinc/
-
-Alternatively, this library can be linked through PYTHONPATH
-in bash
-export PYTHONPATH=OpenCMISS-Libraries<VERSION>/lib/python<2,3>/Release/opencmiss.zinc/:$PYTHONPATH
-
-in windows
-set  PYTHONPATH=OpenCMISS-Libraries<VERSION>\lib\python<2,3>\Release\opencmiss.zinc\;%PYTHONPATH%
+-------------
+Install opencmiss zinc library from pypi
+```
+pip install opencmiss.zinc
+```
 
 Launching the tool
 ------------------
