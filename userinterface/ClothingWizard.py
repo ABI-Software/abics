@@ -308,6 +308,7 @@ class ClothingDefinitionWidget(base, form):
             logging.error('%s %s\n%s %s'%(tr("Failed to load file"),filename, tr("Error"),str(ex)))
         finally:
             QtWidgets.QApplication.restoreOverrideCursor()
+
     def _loadZincMesh(self):
         '''
         Load a obj file for visualization
@@ -441,7 +442,10 @@ class ClothingDefinitionWidget(base, form):
         filename = QtWidgets.QFileDialog.getSaveFileName(None, tr('Clothing filename'),direc,"JSON (*.json)")
         if not filename is None and len(filename[0].strip()) > 0:
             with open(filename[0],'w') as ser:
-                json.dump({'CLOTHINGMESHDATA':self.clothingMeshData.decode('utf-8'),'LAYERS':list(self.itemMetaData.values())}, ser)
+                if not self.clothingMeshData is None:
+                    json.dump({'CLOTHINGMESHDATA':self.clothingMeshData.decode('utf-8'),'LAYERS':list(self.itemMetaData.values())}, ser)
+                else:
+                    json.dump({'LAYERS': list(self.itemMetaData.values())}, ser)
                 self.cache.set('LASTSUCCESSFULWORKSPACE',os.path.dirname(filename[0]))
 
     def _setLayerModel(self):
